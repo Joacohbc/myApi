@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Page Title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+        <script defer src="./js/gestionPersonas.js" type="module"></script>
+    </head>
+    <body>
+        <div>
+            <a class="header" href="./consultas.html"> Consulta de usuarios </a>
+            <a class="header" href="./index.html"> Gestión de usuarios</a>
+        </div>
+
+        <div>
+            <h1> Alta de persona</h1>
+            <form id="form-alta">
+                <label> CI: </label> 
+                <input type="number" name="ci" id="ci" placeholder="Cédula sin guiones" required> <br>
+
+                <label> Nombres: </label> 
+                <input type="text" name="name" id="name" placeholder="Primer nombre" required>
+                <input type="text" name="second_name" id="second_name" placeholder="Segundo nombre"> <br>
+
+                <label> Apellidos: </label>
+                <input type="text" name="surname" id="surname" placeholder="Primer apellido" required>
+                <input type="text" name="second_surname" id="second_surname" placeholder="Segundo apellido"> <br>
+
+                <label> Fecha de nacimiento: </label>
+                <input type="date" name="birthdate" id="birthdate" required> <br>  
+
+                <input type="submit" id="btnAlta" value="Alta"> <br>
+            </form>
+
+            <div id="mensaje-alta"></div>
+
+
+            <h1> Baja de persona</h1>
+            <form id="form-baja">
+                <label> CI: </label> 
+                <input type="number" name="ci" id="ci" placeholder="Cédula sin guiones" required> 
+                <input type="submit" id="btnBaja" value="Baja"> <br>
+
+            </form>
+
+            <div id="mensaje-baja"></div>
+
+            <h1> Modificación de persona</h1>
+            <form id="form-modif">
+                <label> CI: </label> 
+                <input type="text" name="ci" id="ci" placeholder="Cédula sin guiones" required> 
+                <button id="btnCargarDatos"> Cargar </button> <br>
+            </form>
+
+            <div id="mensaje-modif"></div>
+        </div>
+    </body>
+</html>
