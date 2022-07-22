@@ -2,8 +2,6 @@
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
 #
 # Binaries for programs and plugins
-*.exe
-*.exe~
 *.dll
 *.so
 *.dylib
@@ -25,5 +23,6 @@ node_modules/
 .jshintrc
 personas.json
 .vscode/
+.VSCodeCounter/
 package-lock.json
 package.json

@@ -1,17 +1,41 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"fmt"
 	"myAPI/src/handlers"
 	"myAPI/src/middleware"
 	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
 	"time"
 )
 
 const (
-	portSelected = "8080"
-	staticFiles  = "./static"
+	// Puerto predeterminado si no se selecciona uno
+	defaultPort     string = "8080"
+	defaultFrontEnd string = "../static"
+	version         string = "v1.0"
 )
+
+var (
+	portSelected string
+	frontEndDir  string = "../static"
+)
+
+func init() {
+	flag.StringVar(&portSelected, "port", defaultPort, fmt.Sprintf("Indica el puerto de escucha del servidor (predeterminadamente: %s)", defaultPort))
+	flag.StringVar(&frontEndDir, "front", defaultFrontEnd, fmt.Sprintf("Indica el frontend que (predeterminadamente: %s)", defaultPort))
+	flag.Parse()
+
+	abs, err := filepath.Abs(frontEndDir)
+	if err != nil {
+		fmt.Println("Error al obtener la ruta del frontend:", err)
+		os.Exit(1)
+	}
+	frontEndDir = abs
+}
 
 func main() {
 
@@ -19,7 +43,7 @@ func main() {
 	router := http.NewServeMux()
 
 	// Sirvo el Front-end
-	router.Handle("/", http.FileServer(http.Dir(staticFiles)))
+	router.Handle("/", http.FileServer(http.Dir(frontEndDir)))
 
 	// Simple endpoint para realizar peticiones POST y GET
 	router.Handle("/api", middleware.CrearLog(http.HandlerFunc(handlers.HolaMundo)))
@@ -36,7 +60,35 @@ func main() {
 		MaxHeaderBytes: 10 << 20,
 	}
 
-	if err := s.ListenAndServe(); err != nil {
-		log.Fatalln(err)
+	go func() {
+		fmt.Print(`
+__  __          _    ____ ___   ____           _   
+|  \/  |_   _   / \  |  _ \_ _| |  _ \ ___  ___| |_ 
+| |\/| | | | | / _ \ | |_) | |  | |_) / _ \/ __| __|
+| |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
+|_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
+		|___/ `)
+		fmt.Println("Version:", version)
+
+		fmt.Println("- Puerto:", portSelected)
+		fmt.Println("- Frontend:", frontEndDir)
+		fmt.Println("- Incio:", time.Now().Format("01/02/2006 15:04:05"))
+
+		fmt.Println("\nServidor escuchando...")
+		if err := s.ListenAndServe(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}()
+
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, os.Interrupt)
+	<-exit
+
+	fmt.Println("Cerrando servidor...")
+	if err := s.Close(); err != nil {
+		fmt.Println("Error al cerrar el servidor: " + err.Error())
+		os.Exit(1)
 	}
+	fmt.Println("Servidor cerrado con exito <3")
 }
