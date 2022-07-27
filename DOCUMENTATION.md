@@ -112,7 +112,6 @@ Ejemplo de un petición GET a "/users/":
         "birthdate": "15/03/1983",
         "birthdate_time": "1983-03-15T00:00:00Z",
     }
-//...
 ]
 ```
 
@@ -175,6 +174,8 @@ Ejemplo de respuesta del servidor:
 ### PATCH/PUT - /users/
 
 Las peticiones PATCH/PUT dirigidas a este endpoint deben contener un JSON en el body de la petición contenga todos los campos de la persona que se quiere actualizar, no se pueden actualizar la fecha de nacimiento ni la cédula de la persona. **Importante**: Si se dejan en blanco los campos pasaran a estar en blanco, si no se quiere modificar el campo se debe poner igual a como ya esta guardado.
+
+Persona original:
 
 ```json
 {
