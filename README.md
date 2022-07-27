@@ -27,3 +27,7 @@ __  __          _    ____ ___   ____           _
 
 Servidor escuchando...
 ```
+
+## Documentación
+
+Aquí un poco de documentación del API: [DOCUMENTATION.md](./DOCUMETATION.md)

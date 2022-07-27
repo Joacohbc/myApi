@@ -23,7 +23,7 @@ export function darAltaPersona(e) {
     jsonPost("/users/", persona)
         .then((json) => {
 
-            // Muestra un mensaje de exito 
+            // Muestra un mensaje de éxito 
             exitoMensaje(idMensaje, json.message);
 
             // Pregunto si quiere borrar los campos

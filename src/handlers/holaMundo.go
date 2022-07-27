@@ -23,7 +23,7 @@ func HolaMundo(w http.ResponseWriter, r *http.Request) {
 		}
 
 		utils.RJSON(w, http.StatusOK, utils.JSON{
-			"message": fmt.Sprint("El mensaje que enviaste:", json["message"]),
+			"message": fmt.Sprint("El mensaje que enviaste: ", json["message"]),
 		})
 
 	default:

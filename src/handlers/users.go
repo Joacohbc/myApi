@@ -32,7 +32,7 @@ func init() {
 }
 
 // Retorna un Map de personas
-func obtenerUsuarios() (map[int]utils.People, error) {
+func obtenerPersonas() (map[int]utils.People, error) {
 
 	b, err := ioutil.ReadFile(personasJsonPath)
 	if err != nil {
@@ -50,7 +50,7 @@ func obtenerUsuarios() (map[int]utils.People, error) {
 }
 
 // Sobrescribe el archivo json de las personas
-func actualizarUsuarios(persona map[int]utils.People) error {
+func actualizarPersonas(persona map[int]utils.People) error {
 	b, err := json.MarshalIndent(persona, " ", "\t")
 	if err != nil {
 		log.Println("Error al actualizar el archivo de personas:", err)
@@ -77,10 +77,13 @@ func Personas(w http.ResponseWriter, r *http.Request) {
 		} else {
 			getPerson(w, r)
 		}
+
 	case "POST":
 		newPerson(w, r)
+
 	case "DELETE":
 		deletePerson(w, r)
+
 	case "PUT", "PATCH":
 		updatePerson(w, r)
 
@@ -114,7 +117,7 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas, err := obtenerUsuarios()
+	personas, err := obtenerPersonas()
 	if err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer los usuarios, intentelo mas tarde",
@@ -135,7 +138,7 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 
 // Endpoint - /users/ - GET/HEAD
 func getAllPeople(w http.ResponseWriter, _ *http.Request) {
-	personasMap, err := obtenerUsuarios()
+	personasMap, err := obtenerPersonas()
 	if err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer los usuarios, intentelo mas tarde",
@@ -167,7 +170,7 @@ func newPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas, err := obtenerUsuarios()
+	personas, err := obtenerPersonas()
 	if err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer los usuarios, intentelo mas tarde",
@@ -184,7 +187,7 @@ func newPerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	personas[persona.CI] = persona
-	if err := actualizarUsuarios(personas); err != nil {
+	if err := actualizarPersonas(personas); err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al agregar a la nueva persona a la lista, intentelo mas tarde",
 		})
@@ -211,7 +214,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas, err := obtenerUsuarios()
+	personas, err := obtenerPersonas()
 	if err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer los usuarios, intentelo mas tarde",
@@ -245,8 +248,8 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 
 	personas[newPerson.CI] = newPerson
 
-	actualizarUsuarios(personas)
-	if err := actualizarUsuarios(personas); err != nil {
+	actualizarPersonas(personas)
+	if err := actualizarPersonas(personas); err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al actualizar persona de la lista, intentelo mas tarde",
 		})
@@ -272,7 +275,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	personas, err := obtenerUsuarios()
+	personas, err := obtenerPersonas()
 	if err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer los usuarios, intentelo mas tarde",
@@ -289,7 +292,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	delete(personas, persona.CI)
-	if err := actualizarUsuarios(personas); err != nil {
+	if err := actualizarPersonas(personas); err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al elimiar persona de la lista, intentelo mas tarde",
 		})
