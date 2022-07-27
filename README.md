@@ -20,7 +20,7 @@ __  __          _    ____ ___   ____           _
 | |\/| | | | | / _ \ | |_) | |  | |_) / _ \/ __| __|
 | |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
 |_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
-                |___/ Version: v1.0
+        |___/ Version: v1.0
 - Puerto: 8080
 - Frontend: /home/user/Projects/myApi/static
 - Inicio: 07/21/2022 23:05:08
@@ -30,4 +30,4 @@ Servidor escuchando...
 
 ## Documentación
 
-Aquí un poco de documentación del API: [DOCUMENTATION.md](./DOCUMETATION.md)
+Aquí un poco de documentación del API: [DOCUMENTATION.md](./DOCUMENTATION.md)

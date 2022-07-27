@@ -36,7 +36,7 @@ func LJSON[Any any](w http.ResponseWriter, r *http.Request, output Any) error {
 	// Leo el Body
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("Error al leer el body de la peticion:", err)
+		fmt.Println("Error al leer el body de la peticion: ", err)
 		RJSON(w, http.StatusInternalServerError, JSON{
 			"error": "Error al leer la peticion: " + err.Error(),
 		})
@@ -46,9 +46,9 @@ func LJSON[Any any](w http.ResponseWriter, r *http.Request, output Any) error {
 	// Y lo convierto en un JSON
 	err = json.Unmarshal(body, output)
 	if err != nil {
-		fmt.Println("Error al convertir el Body a JSON:", err)
+		fmt.Println("Error al convertir el Body a JSON: ", err)
 		RJSON(w, http.StatusBadRequest, JSON{
-			"error": "Error al leer la peticion, formato erroneo:" + err.Error(),
+			"error": "Error al leer la peticion, formato erroneo: " + err.Error(),
 		})
 		return err
 	}

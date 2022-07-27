@@ -55,11 +55,12 @@ func main() {
 	s := &http.Server{
 		Addr:           ":" + portSelected,
 		Handler:        router,
-		ReadTimeout:    30 * time.Second,
-		WriteTimeout:   30 * time.Second,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 10 << 20,
 	}
 
+	// Inicio el servidor
 	go func() {
 		fmt.Print(`
 __  __          _    ____ ___   ____           _   
@@ -67,7 +68,7 @@ __  __          _    ____ ___   ____           _
 | |\/| | | | | / _ \ | |_) | |  | |_) / _ \/ __| __|
 | |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
 |_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
-		|___/ `)
+        |___/ `)
 		fmt.Println("Version:", version)
 
 		fmt.Println("- Puerto:", portSelected)
@@ -76,19 +77,24 @@ __  __          _    ____ ___   ____           _
 
 		fmt.Println("\nServidor escuchando...")
 		if err := s.ListenAndServe(); err != nil {
-			fmt.Println(err)
+			fmt.Println("Error al iniciar el servidor:", err)
 			os.Exit(1)
 		}
 	}()
 
+	// Creo un canal os.Signal
 	exit := make(chan os.Signal, 1)
+
+	// Que cuando reciba una señal de cierre que siga con el código
 	signal.Notify(exit, os.Interrupt)
 	<-exit
 
+	// Cierro el servidor
 	fmt.Println("Cerrando servidor...")
 	if err := s.Close(); err != nil {
 		fmt.Println("Error al cerrar el servidor: " + err.Error())
 		os.Exit(1)
 	}
+
 	fmt.Println("Servidor cerrado con exito <3")
 }
