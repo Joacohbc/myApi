@@ -2,8 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"myAPI/src/valid"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -57,37 +57,91 @@ func (p *People) ValidCI() error {
 	return nil
 }
 
-// Valida Name y Second Name de la persona
-func (p *People) ValidNames() error {
-	p.Name = strings.TrimSpace(p.Name)
-	if p.Name == "" || len(p.Name) > 50 {
-		return fmt.Errorf("el campo del nombre no puede estar vacio ni ser de mas de 50 caracteres")
+// Valida el Name de la persona
+func (p *People) ValidName() error {
+
+	// El nombre del campo del error
+	const fieldName = "el primer nombre"
+
+	// Valido el nombre
+	name, err := valid.ValidText(fieldName, p.Name, valid.NotEmpty, 1, 50, valid.CanContainsSpace)
+	if err != nil {
+		return err
 	}
 
-	p.SecondName = strings.TrimSpace(p.SecondName)
-	if len(p.SecondName) > 50 {
-		return fmt.Errorf("el campo del segundo nombre no puede tener mas de 50 caracteres")
+	// Valido que le nombre solo tenga letras
+	if err := valid.ValidOnlyLetters(fieldName, name, valid.CanContainsSpace); err != nil {
+		return err
 	}
 
+	p.Name = name
 	return nil
 }
 
-// Valida Surname y Second Surname de la persona
-func (p *People) ValidSurnames() error {
-	p.Surname = strings.TrimSpace(p.Surname)
-	if len(p.Surname) == 0 || len(p.Surname) > 50 {
-		return fmt.Errorf("el campo del apellido no puede estar vacio ni ser de mas de 50 caracteres")
+// Valida el SecondName de la persona
+func (p *People) ValidSecondName() error {
+
+	// El nombre del campo del error
+	const fieldName = "el segundo nombre"
+
+	// Valido el nombre
+	secondName, err := valid.ValidText(fieldName, p.SecondName, valid.CanBeEmpty, 0, 50, valid.CanContainsSpace)
+	if err != nil {
+		return err
 	}
 
-	p.SecondSurname = strings.TrimSpace(p.SecondSurname)
-	if len(p.SecondSurname) > 50 {
-		return fmt.Errorf("el campo del segundo apellido no puede estar vacio ni ser de mas de 50 caracteres")
+	// Valido que le nombre solo tenga letras
+	if err := valid.ValidOnlyLetters(fieldName, secondName, valid.CanContainsSpace); err != nil {
+		return err
 	}
 
+	p.SecondName = secondName
 	return nil
 }
 
-// Valida Birthdate de la persona
+// Valida el Surname de la persona
+func (p *People) ValidSurname() error {
+
+	// El nombre del campo del error
+	const fieldName = "el primer apellido"
+
+	// Valido el nombre
+	surname, err := valid.ValidText(fieldName, p.Surname, valid.NotEmpty, 1, 50, valid.CanContainsSpace)
+	if err != nil {
+		return err
+	}
+
+	// Valido que le nombre solo tenga letras
+	if err := valid.ValidOnlyLetters(fieldName, surname, valid.CanContainsSpace); err != nil {
+		return err
+	}
+
+	p.Surname = surname
+	return nil
+}
+
+// Valida Second Surname de la persona
+func (p *People) ValidSecondSurname() error {
+
+	// El nombre del campo del error
+	const fieldName = "el segundo apellido"
+
+	// Valido el nombre
+	secondSurname, err := valid.ValidText(fieldName, p.SecondSurname, valid.CanBeEmpty, 0, 50, valid.CanContainsSpace)
+	if err != nil {
+		return err
+	}
+
+	// Valido que le nombre solo tenga letras
+	if err := valid.ValidOnlyLetters(fieldName, secondSurname, valid.CanContainsSpace); err != nil {
+		return err
+	}
+
+	p.SecondSurname = secondSurname
+	return nil
+}
+
+// Valida Birthdate de la persona y sobrescribe el valor de BirthdateTime
 func (p *People) ValidBirthdate() error {
 
 	// Referencia: January 2, 15:04:05, 2006
@@ -111,11 +165,19 @@ func (p *People) ValidAll() error {
 		return err
 	}
 
-	if err := p.ValidNames(); err != nil {
+	if err := p.ValidName(); err != nil {
 		return err
 	}
 
-	if err := p.ValidSurnames(); err != nil {
+	if err := p.ValidSecondName(); err != nil {
+		return err
+	}
+
+	if err := p.ValidSurname(); err != nil {
+		return err
+	}
+
+	if err := p.ValidSecondSurname(); err != nil {
 		return err
 	}
 

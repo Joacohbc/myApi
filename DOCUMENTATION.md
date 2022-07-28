@@ -173,7 +173,7 @@ Ejemplo de respuesta del servidor:
 
 ### PATCH/PUT - /users/
 
-Las peticiones PATCH/PUT dirigidas a este endpoint deben contener un JSON en el body de la petición contenga todos los campos de la persona que se quiere actualizar, no se pueden actualizar la fecha de nacimiento ni la cédula de la persona. **Importante**: Si se dejan en blanco los campos pasaran a estar en blanco, si no se quiere modificar el campo se debe poner igual a como ya esta guardado.
+Las peticiones PATCH/PUT dirigidas a este endpoint deben contener un JSON en el body de la petición contenga todos los campos de la persona que se quiere actualizar, no se pueden actualizar la fecha de nacimiento ni la cédula de la persona. **Importante**: Si se dejan en blanco los campos o se omiten estos se tomaran como "no modificados" y mantendrán su valor actual
 
 Persona original:
 

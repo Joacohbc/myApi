@@ -18,7 +18,7 @@
             <h1> Alta de persona</h1>
             <form id="form-alta">
                 <label> CI: </label> 
-                <input type="number" name="ci" id="ci" placeholder="Cédula sin guiones" required> <br>
+                <input type="number" name="ci" id="ci" placeholder="Cédula sin el guion" required> <br>
 
                 <label> Nombres: </label> 
                 <input type="text" name="name" id="name" placeholder="Primer nombre" required>
@@ -31,7 +31,8 @@
                 <label> Fecha de nacimiento: </label>
                 <input type="date" name="birthdate" id="birthdate" required> <br>  
 
-                <input type="submit" id="btnAlta" value="Alta"> <br>
+                <input type="submit" id="btnAlta" value="Alta">
+                <input type="button" id="btnLimpiarAlta" value="Limpiar"> <br>
             </form>
 
             <div id="mensaje-alta"></div>
@@ -41,7 +42,8 @@
             <form id="form-baja">
                 <label> CI: </label> 
                 <input type="number" name="ci" id="ci" placeholder="Cédula sin guiones" required> 
-                <input type="submit" id="btnBaja" value="Baja"> <br>
+                <input type="submit" id="btnBaja" value="Baja">
+                <input type="button" id="btnLimpiarBaja" value="Limpiar"> <br>
 
             </form>
 

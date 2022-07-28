@@ -16,7 +16,7 @@ const unaSolaFila = (msg) => {
     tabla.appendChild(row);
 };
 
-jsonGet("/users")
+jsonGet("/users/")
     .then((json) => {
         let fragment = document.createDocumentFragment();
 
@@ -63,5 +63,6 @@ jsonGet("/users")
     })
     .catch((err) => {
         unaSolaFila("Error al cargar las personas desde el servidor");
+
         errorMensaje(idMensaje, err.message);
     });
