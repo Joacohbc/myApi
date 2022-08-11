@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"myAPI/src/models"
 	"myAPI/src/utils"
 	"net/http"
 	"os"
@@ -22,7 +23,7 @@ func init() {
 	}
 
 	// Sino existe el archivo, creo un nuevo JSON vació
-	b, err := json.MarshalIndent(map[int]utils.People{}, " ", "\t")
+	b, err := json.MarshalIndent(map[int]models.People{}, " ", "\t")
 	if err != nil {
 		log.Println("Error al crear el archivo de persona:", err)
 	}
@@ -36,7 +37,7 @@ func init() {
 
 // Retorna un Map de personas y una Flag que indica si se realizo con éxito la lectura de personas (true)
 // o si ocurrió un error (false)
-func obtenerPersonas(w http.ResponseWriter) (map[int]utils.People, bool) {
+func obtenerPersonas(w http.ResponseWriter) (map[int]models.People, bool) {
 
 	// Leo el archivo
 	b, err := ioutil.ReadFile(personasJsonPath)
@@ -50,7 +51,7 @@ func obtenerPersonas(w http.ResponseWriter) (map[int]utils.People, bool) {
 	}
 
 	// Lo cargo en un map de persona
-	var personas map[int]utils.People
+	var personas map[int]models.People
 	if err = json.Unmarshal(b, &personas); err != nil {
 		log.Println("Error al cargar el archivo de personas al map de personas:", err)
 
@@ -65,7 +66,7 @@ func obtenerPersonas(w http.ResponseWriter) (map[int]utils.People, bool) {
 }
 
 // Sobrescribe el archivo json de las personas
-func actualizarPersonas(persona map[int]utils.People) error {
+func actualizarPersonas(persona map[int]models.People) error {
 	b, err := json.MarshalIndent(persona, " ", "\t")
 	if err != nil {
 		log.Println("Error al actualizar el archivo de personas:", err)
@@ -114,16 +115,16 @@ func Personas(w http.ResponseWriter, r *http.Request) {
 func getPerson(w http.ResponseWriter, r *http.Request) {
 
 	// Leo el URL en busca de la CI de la persona que me piden
-	ci, err := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/users/"))
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
 	if err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
-			"error": "la persona pedida es invalida",
+			"error": "la cedula persona pedida es invalida",
 		})
 		return
 	}
 
 	// Creo una persona y le asigno esa cédula
-	personaPedida := utils.People{
+	personaPedida := models.People{
 		CI: ci,
 	}
 
@@ -164,7 +165,7 @@ func getAllPeople(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	// Guardo los datos del map en una slice para enviarlos
-	personas := []utils.People{}
+	personas := []models.People{}
 	for _, v := range personasMap {
 		personas = append(personas, v)
 	}
@@ -177,7 +178,7 @@ func getAllPeople(w http.ResponseWriter, _ *http.Request) {
 func newPerson(w http.ResponseWriter, r *http.Request) {
 
 	// Leo la persona del body de la petición
-	persona := utils.People{}
+	persona := models.People{}
 	if err := utils.LJSON(w, r, &persona); err != nil {
 		return
 	}
@@ -222,13 +223,23 @@ func newPerson(w http.ResponseWriter, r *http.Request) {
 // Endpoint - /users/ - PUT/PATCH
 func updatePerson(w http.ResponseWriter, r *http.Request) {
 
-	// Le la nueva persona del body de la petición
-	newPerson := utils.People{}
+	// Obtengo la CI de la persona que quiero modificar
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
+	if err != nil {
+		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+			"error": "la cedula persona pedida es invalida",
+		})
+		return
+	}
+
+	// Obtengo al nueva persona del body de la petición
+	newPerson := models.People{}
 	if err := utils.LJSON(w, r, &newPerson); err != nil {
 		return
 	}
 
-	//Valido la CI, que es el campo que necesito para verificar si la persona existe
+	// Le asigno la cedula que se pidio al nuevo usuario para poder validarla
+	newPerson.CI = ci
 	if err := newPerson.ValidCI(); err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": err.Error(),
@@ -243,7 +254,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verifico que la persona exista para poder modificarla
-	_, ok := personas[newPerson.CI]
+	_, ok := personas[ci]
 	if !ok {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": fmt.Sprintf("La persona con la CI %d no existe", newPerson.CI),
@@ -322,10 +333,17 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 // Endpoint - /users/ - DELETE
 func deletePerson(w http.ResponseWriter, r *http.Request) {
 
-	// Leo la persona del body de la petición
-	persona := utils.People{}
-	if err := utils.LJSON(w, r, &persona); err != nil {
+	// Obtengo la CI de la persona que quiero modificar
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
+	if err != nil {
+		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+			"error": "la cedula persona pedida es invalida",
+		})
 		return
+	}
+
+	persona := models.People{
+		CI: ci,
 	}
 
 	// Valido la cédula de la persona
@@ -343,7 +361,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verifico que la persona exista, para poder eliminarla
-	_, ok := personas[persona.CI]
+	_, ok := personas[ci]
 	if !ok {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": fmt.Sprintf("La persona con la CI %d no existe", persona.CI),
@@ -352,7 +370,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Elimino la persona dle map y actualizo el archivo
-	delete(personas, persona.CI)
+	delete(personas, ci)
 	if err := actualizarPersonas(personas); err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al elimiar persona de la lista, intentelo mas tarde",

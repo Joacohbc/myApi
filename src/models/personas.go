@@ -1,8 +1,8 @@
-package utils
+package models
 
 import (
 	"fmt"
-	"myAPI/src/valid"
+	"myAPI/src/validations"
 	"strconv"
 	"time"
 )
@@ -50,27 +50,32 @@ func (p *People) String() string {
 }
 
 // Valida la CI de la persona
-func (p *People) ValidCI() error {
-	if len(strconv.Itoa(p.CI)) != 8 {
+func ValidCI(ci int) error {
+	if len(strconv.Itoa(ci)) != 8 {
 		return fmt.Errorf("el campo de la CI debe tener 8 digitos")
 	}
 	return nil
 }
 
-// Valida el Name de la persona
+// Valida la CI de la persona
+func (p *People) ValidCI() error {
+	return ValidCI(p.CI)
+}
+
+// Valida el Name de la persona y le aplico un formato correcto
 func (p *People) ValidName() error {
 
 	// El nombre del campo del error
 	const fieldName = "el primer nombre"
 
 	// Valido el nombre
-	name, err := valid.ValidText(fieldName, p.Name, valid.NotEmpty, 1, 50, valid.CanContainsSpace)
+	name, err := validations.ValidText(fieldName, p.Name, validations.NotEmpty, 1, 50, validations.CanContainsSpace)
 	if err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := valid.ValidOnlyLetters(fieldName, name, valid.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, name, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
@@ -85,13 +90,13 @@ func (p *People) ValidSecondName() error {
 	const fieldName = "el segundo nombre"
 
 	// Valido el nombre
-	secondName, err := valid.ValidText(fieldName, p.SecondName, valid.CanBeEmpty, 0, 50, valid.CanContainsSpace)
+	secondName, err := validations.ValidText(fieldName, p.SecondName, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace)
 	if err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := valid.ValidOnlyLetters(fieldName, secondName, valid.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, secondName, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
@@ -106,13 +111,13 @@ func (p *People) ValidSurname() error {
 	const fieldName = "el primer apellido"
 
 	// Valido el nombre
-	surname, err := valid.ValidText(fieldName, p.Surname, valid.NotEmpty, 1, 50, valid.CanContainsSpace)
+	surname, err := validations.ValidText(fieldName, p.Surname, validations.NotEmpty, 1, 50, validations.CanContainsSpace)
 	if err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := valid.ValidOnlyLetters(fieldName, surname, valid.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, surname, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
@@ -127,13 +132,13 @@ func (p *People) ValidSecondSurname() error {
 	const fieldName = "el segundo apellido"
 
 	// Valido el nombre
-	secondSurname, err := valid.ValidText(fieldName, p.SecondSurname, valid.CanBeEmpty, 0, 50, valid.CanContainsSpace)
+	secondSurname, err := validations.ValidText(fieldName, p.SecondSurname, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace)
 	if err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := valid.ValidOnlyLetters(fieldName, secondSurname, valid.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, secondSurname, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
