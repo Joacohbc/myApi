@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"myAPI/src/models"
 	"myAPI/src/utils"
@@ -29,7 +28,7 @@ func init() {
 	}
 
 	// Y creo el archivo
-	err = ioutil.WriteFile(personasJsonPath, b, 0644)
+	err = os.WriteFile(personasJsonPath, b, 0644)
 	if err != nil {
 		log.Println("Error al crear el archivo de persona:", err)
 	}
@@ -40,7 +39,7 @@ func init() {
 func obtenerPersonas(w http.ResponseWriter) (map[int]models.People, bool) {
 
 	// Leo el archivo
-	b, err := ioutil.ReadFile(personasJsonPath)
+	b, err := os.ReadFile(personasJsonPath)
 	if err != nil {
 		log.Println("Error al leer el archivo de personas:", err)
 
@@ -73,7 +72,7 @@ func actualizarPersonas(persona map[int]models.People) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(personasJsonPath, b, 0644)
+	err = os.WriteFile(personasJsonPath, b, 0644)
 	if err != nil {
 		log.Println("Error al actualizar el archivo de personas:", err)
 		return err
