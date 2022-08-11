@@ -129,13 +129,8 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Creo una persona y le asigno esa cédula
-	personaPedida := models.People{
-		CI: ci,
-	}
-
 	// Valido que esa cédula sea correcta
-	if err := personaPedida.ValidCI(); err != nil {
+	if err := models.ValidCI(ci); err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": err.Error(),
 		})
@@ -149,16 +144,16 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Si la persona no existe en el map, lo informo con un error
-	_, ok := personas[personaPedida.CI]
+	pers, ok := personas[ci]
 	if !ok {
 		utils.RJSON(w, http.StatusNotFound, utils.JSON{
-			"error": fmt.Sprintf("La persona con la CI %d no existe", personaPedida.CI),
+			"error": fmt.Sprintf("La persona con la CI %d no existe", ci),
 		})
 		return
 	}
 
 	// Si existe la retorno
-	utils.RJSON(w, http.StatusOK, personas[personaPedida.CI])
+	utils.RJSON(w, http.StatusOK, pers)
 }
 
 // Endpoint - GET/HEAD
@@ -233,7 +228,14 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, URLServed))
 	if err != nil {
 		utils.RJSON(w, http.StatusNotFound, utils.JSON{
-			"error": "la cedula persona pedida es invalida",
+			"error": "la cedula pedida es invalida",
+		})
+		return
+	}
+
+	if err := models.ValidCI(ci); err != nil {
+		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -241,15 +243,6 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	// Obtengo al nueva persona del body de la petición
 	newPerson := models.People{}
 	if err := utils.LJSON(w, r, &newPerson); err != nil {
-		return
-	}
-
-	// Le asigno la cedula que se pidio al nuevo usuario para poder validarla
-	newPerson.CI = ci
-	if err := newPerson.ValidCI(); err != nil {
-		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
-			"error": err.Error(),
-		})
 		return
 	}
 
@@ -272,15 +265,10 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	{
 
 		// Guardo los valores actuales de la persona en oldPerson
-		oldPerson := personas[newPerson.CI]
+		oldPerson := personas[ci]
 
-		// Verifico que la cédula no se haya cambiado (por las dudas)
-		if newPerson.CI != oldPerson.CI {
-			utils.RJSON(w, http.StatusBadRequest, utils.JSON{
-				"error": "La CI de una persona no se puede cambiar",
-			})
-			return
-		}
+		// Le asigno la cedula a la persona (Para luego en al validacio no tire erro por no tenerla)
+		newPerson.CI = ci
 
 		//
 		// Si algún campo esta vació, significa que no se quiere modificar
@@ -313,7 +301,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 		}
 
 		//Valido todos los campos de la persona
-		if err := newPerson.ValidAll(); err != nil {
+		if err := newPerson.FormatAndValidAll(); err != nil {
 			utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 				"error": err.Error(),
 			})
@@ -322,7 +310,7 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Sobrescribo la persona y actualizo el archivo
-	personas[newPerson.CI] = newPerson
+	personas[ci] = newPerson
 	if err := actualizarPersonas(personas); err != nil {
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al actualizar persona de la lista, intentelo mas tarde",
@@ -348,12 +336,8 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	persona := models.People{
-		CI: ci,
-	}
-
 	// Valido la cédula de la persona
-	if err := persona.ValidCI(); err != nil {
+	if err := models.ValidCI(ci); err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": err.Error(),
 		})
@@ -370,7 +354,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	_, ok := personas[ci]
 	if !ok {
 		utils.RJSON(w, http.StatusNotFound, utils.JSON{
-			"error": fmt.Sprintf("La persona con la CI %d no existe", persona.CI),
+			"error": fmt.Sprintf("La persona con la CI %d no existe", ci),
 		})
 		return
 	}
@@ -386,6 +370,6 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 
 	// Envió mensaje de éxito
 	utils.RJSON(w, http.StatusOK, utils.JSON{
-		"message": fmt.Sprintf("La persona con la cedula %d se ha dado de baja con exito", persona.CI),
+		"message": fmt.Sprintf("La persona con la cedula %d se ha dado de baja con exito", ci),
 	})
 }

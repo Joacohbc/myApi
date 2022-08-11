@@ -6,31 +6,6 @@ import (
 	"unicode"
 )
 
-// Retorna el string con la primera letra mayúscula
-func FirstUpper(s string) string {
-	// Si solo tiene una letra, retorno esa única letra en mayúscula
-	if len(s) == 1 {
-		return strings.ToUpper(string(s[0]))
-	} else {
-		// Si tiene mas de una letra, retorno la primera mayúscula y el resto en minúscula
-		return strings.ToUpper(string(s[0])) + strings.ToLower(s[1:])
-	}
-}
-
-// Retorna el string con la primera letra mayúscula de cada palabra (usa strings.Fields para separar)
-func FirstUpperInEachWord(s string) string {
-	// Separo el string en palabras
-	words := strings.Fields(s)
-
-	// A cada palabra le pongo la primera letra en mayúscula
-	for i, v := range words {
-		words[i] = FirstUpper(v)
-	}
-
-	// Retorno todas las palabras unidas por un espacio
-	return strings.Join(words, " ")
-}
-
 // Representa si un campo puede ser o no vació (para uso de funciones)
 type Emptiness bool
 
@@ -60,41 +35,38 @@ const (
 	Largo mínimo no cumplido - @fieldName debe tener como mínimo de @minLen caracteres
 	Largo máximo no cumplido - @fieldName debe tener como máximo de @maLen caracteres
 */
-func ValidText(fieldName string, value string, canBeEmpty Emptiness, minLen int, maxLen int, containsSpaces Spaces) (string, error) {
+func ValidText(fieldName string, value string, canBeEmpty Emptiness, minLen int, maxLen int, containsSpaces Spaces) error {
 
 	// Borro espacios iniciales y finales
 	value = strings.TrimSpace(value)
-
-	// Pongo todas en mayúscula
-	value = FirstUpperInEachWord(value)
 
 	// Si no puede contener espacios, valido que no contenga espacios
 	if !containsSpaces {
 		// La función Fields divide por espacios, entonces si el
 		// array tiene mas de 1 de largo, significa que hay mas 2 palabras (por tanto un espacio)
 		if len(strings.Fields(value)) > 1 {
-			return "", fmt.Errorf("%s no puede contener espacios", fieldName)
+			return fmt.Errorf("%s no puede contener espacios", fieldName)
 		}
 	}
 
 	// Si no puede ser vacía, valido que no sea vacía
 	if !canBeEmpty {
 		if len(value) == 0 {
-			return "", fmt.Errorf("%s no puede estar vacio", fieldName)
+			return fmt.Errorf("%s no puede estar vacio", fieldName)
 		}
 	}
 
 	// Valido la cantidad caracteres mínimos
 	if len(value) < minLen {
-		return "", fmt.Errorf("%s debe tener como mínimo de %d caracteres", fieldName, minLen)
+		return fmt.Errorf("%s debe tener como mínimo de %d caracteres", fieldName, minLen)
 	}
 
 	// Valido la cantidad caracteres máximos
 	if len(value) > maxLen {
-		return "", fmt.Errorf("%s debe tener como maximo de %d caracteres", fieldName, maxLen)
+		return fmt.Errorf("%s debe tener como maximo de %d caracteres", fieldName, maxLen)
 	}
 
-	return value, nil
+	return nil
 }
 
 // Valida que todos los caracteres del string sea letras o espacios

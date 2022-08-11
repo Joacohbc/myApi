@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"myAPI/src/validations"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -69,18 +70,25 @@ func (p *People) ValidName() error {
 	const fieldName = "el primer nombre"
 
 	// Valido el nombre
-	name, err := validations.ValidText(fieldName, p.Name, validations.NotEmpty, 1, 50, validations.CanContainsSpace)
-	if err != nil {
+	if err := validations.ValidText(fieldName, p.Name, validations.NotEmpty, 1, 50, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := validations.ValidOnlyLetters(fieldName, name, validations.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, p.Name, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
-	p.Name = name
 	return nil
+}
+
+func formatTextField(s string) string {
+	return validations.FirstUpperInEachWord(strings.TrimSpace(s))
+}
+
+// Aplica el formato correcto para el Name de la persona
+func (p *People) FormatName() {
+	p.Name = formatTextField(p.Name)
 }
 
 // Valida el SecondName de la persona
@@ -90,18 +98,21 @@ func (p *People) ValidSecondName() error {
 	const fieldName = "el segundo nombre"
 
 	// Valido el nombre
-	secondName, err := validations.ValidText(fieldName, p.SecondName, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace)
-	if err != nil {
+	if err := validations.ValidText(fieldName, p.SecondName, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := validations.ValidOnlyLetters(fieldName, secondName, validations.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, p.SecondName, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
-	p.SecondName = secondName
 	return nil
+}
+
+// Aplica el formato correcto para el SecondName de la persona
+func (p *People) FormatSecondName() {
+	p.SecondName = formatTextField(p.SecondName)
 }
 
 // Valida el Surname de la persona
@@ -111,18 +122,21 @@ func (p *People) ValidSurname() error {
 	const fieldName = "el primer apellido"
 
 	// Valido el nombre
-	surname, err := validations.ValidText(fieldName, p.Surname, validations.NotEmpty, 1, 50, validations.CanContainsSpace)
-	if err != nil {
+	if err := validations.ValidText(fieldName, p.Surname, validations.NotEmpty, 1, 50, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := validations.ValidOnlyLetters(fieldName, surname, validations.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, p.Surname, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
-	p.Surname = surname
 	return nil
+}
+
+// Aplica el formato correcto para el Surname de la persona
+func (p *People) FormatSurname() {
+	p.Surname = formatTextField(p.Surname)
 }
 
 // Valida Second Surname de la persona
@@ -132,18 +146,21 @@ func (p *People) ValidSecondSurname() error {
 	const fieldName = "el segundo apellido"
 
 	// Valido el nombre
-	secondSurname, err := validations.ValidText(fieldName, p.SecondSurname, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace)
-	if err != nil {
+	if err := validations.ValidText(fieldName, p.SecondSurname, validations.CanBeEmpty, 0, 50, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
 	// Valido que le nombre solo tenga letras
-	if err := validations.ValidOnlyLetters(fieldName, secondSurname, validations.CanContainsSpace); err != nil {
+	if err := validations.ValidOnlyLetters(fieldName, p.SecondSurname, validations.CanContainsSpace); err != nil {
 		return err
 	}
 
-	p.SecondSurname = secondSurname
 	return nil
+}
+
+// Aplica el formato correcto para el SecondSurname de la persona
+func (p *People) FormatSecondSurname() {
+	p.SecondSurname = formatTextField(p.SecondSurname)
 }
 
 // Valida Birthdate de la persona y sobrescribe el valor de BirthdateTime
@@ -191,4 +208,18 @@ func (p *People) ValidAll() error {
 	}
 
 	return nil
+}
+
+// Aplica el formato a todos los campos de la persona
+func (p *People) FormatAll() {
+	p.FormatName()
+	p.FormatSecondName()
+	p.FormatSurname()
+	p.FormatSecondSurname()
+}
+
+// Aplica el formato y valida todos los campos de la persona
+func (p *People) FormatAndValidAll() error {
+	p.FormatAll()
+	return p.ValidAll()
 }
