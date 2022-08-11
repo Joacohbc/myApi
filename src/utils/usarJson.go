@@ -2,22 +2,23 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
+	"myAPI/src/logger"
 	"net/http"
 	"strconv"
 )
 
+var mlog = logger.Logger
+
 // Abreviación de map[string]interface{}
 type JSON map[string]interface{}
 
-// Función que convierte responde en JSON
+// Función que responde en JSON
 func RJSON(w http.ResponseWriter, statusCode int, message interface{}) {
 
 	jsonb, err := json.Marshal(message)
 	if err != err {
-		log.Println("Error al hacer marshal:", err)
+		mlog.Println("Error al hacer marshal:", err)
 		return
 	}
 
@@ -34,9 +35,9 @@ func RJSON(w http.ResponseWriter, statusCode int, message interface{}) {
 func LJSON[Any any](w http.ResponseWriter, r *http.Request, output Any) error {
 
 	// Leo el Body
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("Error al leer el body de la peticion: ", err)
+		mlog.Println("Error al leer el body de la peticion: ", err.Error())
 		RJSON(w, http.StatusInternalServerError, JSON{
 			"error": "Error al leer la peticion: " + err.Error(),
 		})
@@ -46,7 +47,7 @@ func LJSON[Any any](w http.ResponseWriter, r *http.Request, output Any) error {
 	// Y lo convierto en un JSON
 	err = json.Unmarshal(body, output)
 	if err != nil {
-		fmt.Println("Error al convertir el Body a JSON: ", err)
+		mlog.Println("Error al convertir el Body a JSON: ", err.Error())
 		RJSON(w, http.StatusBadRequest, JSON{
 			"error": "Error al leer la peticion, formato erroneo: " + err.Error(),
 		})

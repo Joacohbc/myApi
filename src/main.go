@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"flag"
 	"fmt"
 	"myAPI/src/handlers"
@@ -22,6 +24,7 @@ const (
 var (
 	portSelected string
 	frontEndDir  string = "../static"
+	buff         bytes.Buffer
 )
 
 func init() {
@@ -38,63 +41,69 @@ func init() {
 }
 
 func main() {
-
 	//Creo el Router de Rutas
-	router := http.NewServeMux()
+	mux := http.NewServeMux()
 
 	// Sirvo el Front-end
-	router.Handle("/", http.FileServer(http.Dir(frontEndDir)))
+	mux.Handle("/", http.FileServer(http.Dir(frontEndDir)))
 
 	// Simple endpoint para realizar peticiones POST y GET
-	router.Handle("/api", middleware.CrearLog(http.HandlerFunc(handlers.HolaMundo)))
+	mux.Handle("/api", middleware.Logger(http.HandlerFunc(handlers.HolaMundo)))
 
 	// Endpoint completo
-	router.Handle("/users/", middleware.CrearLog(http.HandlerFunc(handlers.Personas)))
+	mux.Handle("/users/", middleware.Logger(http.HandlerFunc(handlers.Personas)))
 
 	//Personalizo el servidor
 	s := &http.Server{
 		Addr:           ":" + portSelected,
-		Handler:        router,
+		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 10 << 20,
 	}
 
+	wait := make(chan struct{})
 	// Inicio el servidor
 	go func() {
-		fmt.Print(`
-__  __          _    ____ ___   ____           _   
-|  \/  |_   _   / \  |  _ \_ _| |  _ \ ___  ___| |_ 
-| |\/| | | | | / _ \ | |_) | |  | |_) / _ \/ __| __|
-| |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
-|_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
-        |___/ `)
-		fmt.Println("Version:", version)
+		// Creo un canal os.Signal
+		exit := make(chan os.Signal, 1)
 
-		fmt.Println("- Puerto:", portSelected)
-		fmt.Println("- Frontend:", frontEndDir)
-		fmt.Println("- Incio:", time.Now().Format("01/02/2006 15:04:05"))
+		// Que cuando reciba una señal de cierre que siga con el código
+		signal.Notify(exit, os.Interrupt)
+		<-exit
 
-		fmt.Println("\nServidor escuchando...")
-		if err := s.ListenAndServe(); err != nil {
-			fmt.Println("Error al iniciar el servidor:", err)
+		// Cierro el servidor
+		fmt.Println("Cerrando servidor...")
+
+		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*15))
+		defer cancel()
+		if err := s.Shutdown(ctx); err != nil {
+			fmt.Println("Error al cerrar el servidor: " + err.Error())
 			os.Exit(1)
 		}
+		fmt.Println("Servidor cerrado con exito <3")
+
+		close(wait)
 	}()
 
-	// Creo un canal os.Signal
-	exit := make(chan os.Signal, 1)
+	fmt.Print(`
+	__  __          _    ____ ___   ____           _   
+	|  \/  |_   _   / \  |  _ \_ _| |  _ \ ___  ___| |_ 
+	| |\/| | | | | / _ \ | |_) | |  | |_) / _ \/ __| __|
+	| |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
+	|_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
+			|___/ `)
+	fmt.Println("Version:", version)
 
-	// Que cuando reciba una señal de cierre que siga con el código
-	signal.Notify(exit, os.Interrupt)
-	<-exit
+	fmt.Println("- Puerto:", portSelected)
+	fmt.Println("- Frontend:", frontEndDir)
+	fmt.Println("- Incio:", time.Now().Format("01/02/2006 15:04:05"))
 
-	// Cierro el servidor
-	fmt.Println("Cerrando servidor...")
-	if err := s.Close(); err != nil {
-		fmt.Println("Error al cerrar el servidor: " + err.Error())
+	fmt.Println("\nServidor escuchando...")
+	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+		fmt.Println("Error al iniciar el servidor:", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Servidor cerrado con exito <3")
+	<-wait
 }

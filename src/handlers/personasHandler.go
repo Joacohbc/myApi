@@ -3,19 +3,26 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"myAPI/src/logger"
 	"myAPI/src/models"
 	"myAPI/src/utils"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 )
 
-const personasJsonPath string = "./personas.json"
+const (
+	// Ruta donde guardar el archivos de People
+	personasJsonPath string = "./people.json"
+
+	// URL donde se llama a este Enpoint
+	URLServed string = "/users/"
+)
+
+// Variable de mi archivo para realizar Logs
+var mlog = logger.Logger
 
 func init() {
-
 	// Si el archivo existe de las personas, retorno para continuar con el código
 	if _, err := os.Stat(personasJsonPath); err == nil {
 		return
@@ -24,13 +31,13 @@ func init() {
 	// Sino existe el archivo, creo un nuevo JSON vació
 	b, err := json.MarshalIndent(map[int]models.People{}, " ", "\t")
 	if err != nil {
-		log.Println("Error al crear el archivo de persona:", err)
+		mlog.Println("Error al crear el archivo de persona:", err)
 	}
 
 	// Y creo el archivo
 	err = os.WriteFile(personasJsonPath, b, 0644)
 	if err != nil {
-		log.Println("Error al crear el archivo de persona:", err)
+		mlog.Println("Error al crear el archivo de persona:", err)
 	}
 }
 
@@ -41,7 +48,7 @@ func obtenerPersonas(w http.ResponseWriter) (map[int]models.People, bool) {
 	// Leo el archivo
 	b, err := os.ReadFile(personasJsonPath)
 	if err != nil {
-		log.Println("Error al leer el archivo de personas:", err)
+		mlog.Println("Error al leer el archivo de personas:", err)
 
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer las personas, intentelo mas tarde",
@@ -52,7 +59,7 @@ func obtenerPersonas(w http.ResponseWriter) (map[int]models.People, bool) {
 	// Lo cargo en un map de persona
 	var personas map[int]models.People
 	if err = json.Unmarshal(b, &personas); err != nil {
-		log.Println("Error al cargar el archivo de personas al map de personas:", err)
+		mlog.Println("Error al cargar el archivo de personas al map de personas:", err)
 
 		utils.RJSON(w, http.StatusInternalServerError, utils.JSON{
 			"error": "Error al intentar leer las personas, intentelo mas tarde",
@@ -68,13 +75,13 @@ func obtenerPersonas(w http.ResponseWriter) (map[int]models.People, bool) {
 func actualizarPersonas(persona map[int]models.People) error {
 	b, err := json.MarshalIndent(persona, " ", "\t")
 	if err != nil {
-		log.Println("Error al actualizar el archivo de personas:", err)
+		mlog.Println("Error al actualizar el archivo de personas:", err)
 		return err
 	}
 
 	err = os.WriteFile(personasJsonPath, b, 0644)
 	if err != nil {
-		log.Println("Error al actualizar el archivo de personas:", err)
+		mlog.Println("Error al actualizar el archivo de personas:", err)
 		return err
 	}
 
@@ -87,7 +94,7 @@ func Personas(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case "GET", "HEAD":
-		if strings.TrimPrefix(r.URL.Path, "/users/") == "" {
+		if utils.GetLastPathVariable(r, URLServed) == "" {
 			getAllPeople(w, r)
 		} else {
 			getPerson(w, r)
@@ -103,21 +110,21 @@ func Personas(w http.ResponseWriter, r *http.Request) {
 		updatePerson(w, r)
 
 	default:
-		log.Println("Se hizo una peticion:", r.Method)
+		mlog.Println("Se hizo una peticion:", r.Method)
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": "Las peticiones a esta ruta deben ser GET, HEAD, POST, DELETE, PUT o PATCH",
 		})
 	}
 }
 
-// Endpoint - /users/ - GET/HEAD
+// Endpoint - GET/HEAD
 func getPerson(w http.ResponseWriter, r *http.Request) {
 
 	// Leo el URL en busca de la CI de la persona que me piden
-	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, URLServed))
 	if err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
-			"error": "la cedula persona pedida es invalida",
+			"error": "la cedula pedida es invalida",
 		})
 		return
 	}
@@ -144,7 +151,7 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 	// Si la persona no existe en el map, lo informo con un error
 	_, ok := personas[personaPedida.CI]
 	if !ok {
-		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+		utils.RJSON(w, http.StatusNotFound, utils.JSON{
 			"error": fmt.Sprintf("La persona con la CI %d no existe", personaPedida.CI),
 		})
 		return
@@ -154,7 +161,7 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 	utils.RJSON(w, http.StatusOK, personas[personaPedida.CI])
 }
 
-// Endpoint - /users/ - GET/HEAD
+// Endpoint - GET/HEAD
 func getAllPeople(w http.ResponseWriter, _ *http.Request) {
 
 	// Obtengo el listado de todas las personas
@@ -173,7 +180,7 @@ func getAllPeople(w http.ResponseWriter, _ *http.Request) {
 	utils.RJSON(w, http.StatusOK, personas)
 }
 
-// Endpoint - /users/ - POST
+// Endpoint - POST
 func newPerson(w http.ResponseWriter, r *http.Request) {
 
 	// Leo la persona del body de la petición
@@ -219,13 +226,13 @@ func newPerson(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Endpoint - /users/ - PUT/PATCH
+// Endpoint - PUT/PATCH
 func updatePerson(w http.ResponseWriter, r *http.Request) {
 
 	// Obtengo la CI de la persona que quiero modificar
-	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, URLServed))
 	if err != nil {
-		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+		utils.RJSON(w, http.StatusNotFound, utils.JSON{
 			"error": "la cedula persona pedida es invalida",
 		})
 		return
@@ -329,11 +336,11 @@ func updatePerson(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Endpoint - /users/ - DELETE
+// Endpoint - DELETE
 func deletePerson(w http.ResponseWriter, r *http.Request) {
 
 	// Obtengo la CI de la persona que quiero modificar
-	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, "/users/"))
+	ci, err := strconv.Atoi(utils.GetLastPathVariable(r, URLServed))
 	if err != nil {
 		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
 			"error": "la cedula persona pedida es invalida",
@@ -362,7 +369,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	// Verifico que la persona exista, para poder eliminarla
 	_, ok := personas[ci]
 	if !ok {
-		utils.RJSON(w, http.StatusBadRequest, utils.JSON{
+		utils.RJSON(w, http.StatusNotFound, utils.JSON{
 			"error": fmt.Sprintf("La persona con la CI %d no existe", persona.CI),
 		})
 		return

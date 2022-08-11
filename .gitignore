@@ -21,9 +21,8 @@ go.work
 *.sh
 node_modules/
 .jshintrc
-personas.json
 .vscode/
 .VSCodeCounter/
-package-lock.json
-package.json
+*.json
 Ideas.txt
+src/logs
