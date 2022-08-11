@@ -1,5 +1,7 @@
 # Documentación de la API
 
+Documentacion en POSTMAN: [Postman_myApi_Documentation.json](./myAPI%20Native%20Golang%20Documentation.json)
+
 ## Endpoint /api
 
 En este endpoints solo se pueden enviar 2 tipos de peticiones: GET y POST.
@@ -55,7 +57,7 @@ En este endpoint se aceptan bastantes más tipos de peticiones: GET/HEAD, POST, 
 Cada persona tiene los siguientes campos:
 
 - CI, es un campo obligatorio de tipo entero de 8 caracteres. En el JSON el campo es "ci"
-- Nombre, eys un campo obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es "name"
+- Nombre, es un campo obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es "name"
 - Segundo nombre, es un campo no obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es "second_name"
 - Apellido, es un campo obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es "surname"
 - Segundo apellido, es un campo no obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es "second_surname"
@@ -153,15 +155,9 @@ Ejemplo de respuesta del servidor:
 
 ### DELETE - /users/
 
-Las peticiones DELETE dirigidas a este endpoint deben contener un JSON en el body de la petición contenga la CI de la persona que se quiera eliminar.
+Las peticiones DELETE dirigidas a este endpoint deben contener una CI de la persona que se quiere eliminar en la URL de la peticion.
 
-Ejemplo de petición DELETE con un JSON en el body:
-
-```json
-{
-    "ci": 12345678
-}
-```
+Ejemplo de petición DELETE a /users/12345678
 
 Ejemplo de respuesta del servidor:
 
@@ -188,11 +184,10 @@ Persona original:
 }
 ```
 
-Ejemplo de petición PUT:
+Ejemplo de petición PUT a /users/58762269:
 
 ```json
 {
-    "ci": 58762269,
     "name": "Moly",
     "second_name": "Daniela",
     "surname": "Rosenfeld",

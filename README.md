@@ -30,4 +30,4 @@ Servidor escuchando...
 
 ## Documentación
 
-Aquí un poco de documentación del API: [DOCUMENTATION.md](./DOCUMENTATION.md)
+Aquí un poco de documentación del API: [DOCUMENTATION.md](./docs/DOCUMENTATION.md)

@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "42cfc289-2ff8-42ce-b540-d0d0298a7c2a",
+		"name": "myAPI Native Golang",
+		"description": "Una API REST desarrollada en Go 100% Vanilla de un 3 simples endpoints los cuales permite realizar:\n\n- Para comprobar estado del servidor. Endpoint: /api que acepta peticiones GET y POST.\n\n- Para realizar altas, bajas, modificación y consulta de personas. Endpoint: /users/ que acepta peticiones GET/HEAD, POST, PUT/PATH y DELETE\n- La API sirve un Front-End muy simple desarrollado con HTML/CSS y Javascript 100% Vanilla para comprobar el funcionamiento del API mediante peticiones realizar con FETCH.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Endpoint - /api",
+			"item": [
+				{
+					"name": "Obtener respuesta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api"
+							]
+						},
+						"description": "La respuesta para una petición GET sera un simple JSON:\n\n```json\n{\n    \"message\": \"Hola Mundo!\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Enviar mensaje",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api"
+							]
+						},
+						"description": "La petición POST debe contener en el body un JSON con un la propiedad \"message\":\n\nEjemplo de JSON de la petición:\n\nPetición POST:\n\n```json\n{\n    \"message\": \"Hola Servidor!\"\n}\n```\n\nRespuesta del servidor:\n\n```json\n{\n    \"message\": \"El mensaje que enviaste: Hola Servidor!\"\n}\n```"
+					},
+					"response": []
+				}
+			],
+			"description": "**Objetivo:** Para comprobar estado del servidor.\n\n**Peticiones:** En este endpoints solo se pueden enviar 2 tipos de peticiones: GET y POST."
+		},
+		{
+			"name": "Endpoint - /users/",
+			"item": [
+				{
+					"name": "GET / HEAD",
+					"item": [
+						{
+							"name": "Obtener todas las personas",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/users/",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Obtener una persona",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/users/58762269",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										"58762269"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Las peticiones GET/HEAD dirigidas a este endpoint pueden contener, o no, la cédula de la persona de la cual se quiere los datos en URL(\"/users/58762269\") para retornar unicamente la persona indicada, o no contener nada (\"/users/\") para obtener un listado de todas las personas registradas.\n\nEjemplo de un petición GET a \"/users/58762269\":\n\n```json\n{\n    \"ci\": 58762269,\n    \"name\": \"Tara\",\n    \"second_name\": \"Lany\",\n    \"surname\": \"Rosenfeld\",\n    \"second_surname\": \"Burges\",\n    \"birthdate\": \"19/01/1964\",\n    \"birthdate_time\": \"1964-01-19T00:00:00Z\",\n}\n```\n\nEjemplo de un petición GET a \"/users/\":\n\n```json\n[\n    {\n        \"ci\": 58762269,\n        \"name\": \"Tara\",\n        \"second_name\": \"Lany\",\n        \"surname\": \"Rosenfeld\",\n        \"second_surname\": \"Burges\",\n        \"birthdate\": \"19/01/1964\",\n        \"birthdate_time\": \"1964-01-19T00:00:00Z\",\n    },\n    {\n        \"ci\": 71461179,\n        \"name\": \"Joseph\",\n        \"second_name\": \"\",\n        \"surname\": \"Karr\",\n        \"second_surname\": \"Celestine\",\n        \"birthdate\": \"03/01/1952\",\n        \"birthdate_time\": \"1952-01-03T00:00:00Z\",\n    },\n    {\n        \"ci\": 12345678,\n        \"name\": \"Barbara\",\n        \"second_name\": \"Liliana\",\n        \"surname\": \"Eldredg\",\n        \"second_surname\": \"\",\n        \"birthdate\": \"15/03/1983\",\n        \"birthdate_time\": \"1983-03-15T00:00:00Z\",\n    }\n]\n```"
+				},
+				{
+					"name": "Nueva persona",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ci\": 58762269,\n    \"name\": \"Tara\",\n    \"second_name\": \"Lany\",\n    \"surname\": \"Rosenfeld\",\n    \"second_surname\": \"Burges\",\n    \"birthdate\": \"19/01/1964\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/users/",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								""
+							]
+						},
+						"description": "Las peticiones POST dirigidas a este endpoint deben contener un JSON en el body de la petición contenga como mínimo todos los campos obligatorios. La cédula al ser identificador de cada persona no se puede repetir, y en caso de que se repita el servidor informara del error. Los campos no obligatorios no tiene porque estar dentro del JSON (en caso de que no se quieran ingresar).\n\nEjemplo de una petición POST con un JSON en el body:\n\n```json\n{\n    \"ci\": 57960390,\n    \"name\": \"Pete\",\n    \"second_name\": \"\",\n    \"surname\": \"Little\",\n    \"second_surname\": \"\",\n    \"birthdate\": \"12/02/1984\"\n}\n```\n\nSiendo lo mismos que:\n\n```json\n{\n    \"ci\": 57960390,\n    \"name\": \"Pete\",\n    \"surname\": \"Little\",\n    \"birthdate\": \"12/02/1984\"\n}\n```\n\nEjemplo de respuesta del servidor:\n\n```json\n{\n    \"message\": \"La persona Pete Little fue creada con éxito\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Borrar persona",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/users/71461179",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"71461179"
+							]
+						},
+						"description": "Las peticiones DELETE dirigidas a este endpoint deben contener una CI de la persona que se quiere eliminar en la URL de la peticion.\n\nEjemplo de petición DELETE a /users/12345678\n\nEjemplo de respuesta del servidor:\n\n```json\n{\n    \"message\": \"La persona con la cédula 12345678 se ha dado de baja con éxito\"\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Modificar una persona",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Moly\",\n    \"second_name\": \"Daniela\",\n    \"surname\": \"Rosenfeld\",\n    \"second_surname\": \"\",\n    \"birthdate\": \"19/01/1964\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/users/58762269",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"58762269"
+							]
+						},
+						"description": "Las peticiones PATCH/PUT dirigidas a este endpoint deben contener un JSON en el body de la petición contenga todos los campos de la persona que se quiere actualizar, no se pueden actualizar la fecha de nacimiento ni la cédula de la persona. **Importante**: Si se dejan en blanco los campos o se omiten estos se tomaran como \"no modificados\" y mantendrán su valor actual\n\nPersona original:\n\n```json\n{\n    \"ci\": 58762269,\n    \"name\": \"Tara\",\n    \"second_name\": \"Lany\",\n    \"surname\": \"Rosenfeld\",\n    \"second_surname\": \"Burges\",\n    \"birthdate\": \"19/01/1964\"\n}\n```\n\nEjemplo de petición PUT a /users/58762269:\n\n```json\n{\n    \"name\": \"Moly\",\n    \"second_name\": \"Daniela\",\n    \"surname\": \"Rosenfeld\",\n    \"second_surname\": \"\",\n    \"birthdate\": \"19/01/1964\"\n}\n```\n\nEjemplo de respuesta del servidor:\n\n```json\n{\n    \"message\": \"La personas con la CI 58762269 (Moly Rosenfeld) fue modificada correctamente\"\n}\n```"
+					},
+					"response": []
+				}
+			],
+			"description": "En este endpoint se aceptan bastantes más tipos de peticiones: GET/HEAD, POST, PUT/PATH y DELETE.\n\nCada persona tiene los siguientes campos:\n\n- CI, es un campo obligatorio de tipo entero de 8 caracteres. En el JSON el campo es \"ci\"\n- Nombre, es un campo obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es \"name\"\n- Segundo nombre, es un campo no obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es \"second_name\"\n- Apellido, es un campo obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es \"surname\"\n- Segundo apellido, es un campo no obligatorio de tipo string de mínimo 1 carácter y máximo 50. En el JSON el campo es \"second_surname\"\n- Fecha de nacimiento, es un campo obligatorio de tipo que debe ir en el formato \"dd/mm/yyyy\", usando los \"/\". En el JSON el campo es \"birthdate\". Ejemplo 01/01/2001, no sirve la fecha 1/1/2001, debe incluir 2 digitos para el mes y el dia\n\nAdicionalmente cuando ser pide un listado de la información de las personas personas viene con un dato adicional, el campo \"birthdate_time\" que es un campo que solo utiliza el servidor en el tipo time.Time"
+		}
+	]
+}
