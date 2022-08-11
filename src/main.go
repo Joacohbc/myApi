@@ -1,51 +1,24 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"flag"
 	"fmt"
+	"myAPI/src/env"
 	"myAPI/src/handlers"
 	"myAPI/src/middleware"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"time"
 )
 
-const (
-	// Puerto predeterminado si no se selecciona uno
-	defaultPort     string = "8080"
-	defaultFrontEnd string = "../static"
-	version         string = "v1.0"
-)
-
-var (
-	portSelected string
-	frontEndDir  string = "../static"
-	buff         bytes.Buffer
-)
-
-func init() {
-	flag.StringVar(&portSelected, "port", defaultPort, fmt.Sprintf("Indica el puerto de escucha del servidor (predeterminadamente: %s)", defaultPort))
-	flag.StringVar(&frontEndDir, "front", defaultFrontEnd, fmt.Sprintf("Indica el frontend que (predeterminadamente: %s)", defaultPort))
-	flag.Parse()
-
-	abs, err := filepath.Abs(frontEndDir)
-	if err != nil {
-		fmt.Println("Error al obtener la ruta del frontend:", err)
-		os.Exit(1)
-	}
-	frontEndDir = abs
-}
-
 func main() {
+
 	//Creo el Router de Rutas
 	mux := http.NewServeMux()
 
 	// Sirvo el Front-end
-	mux.Handle("/", http.FileServer(http.Dir(frontEndDir)))
+	mux.Handle("/", http.FileServer(http.Dir(env.FrontEndDir)))
 
 	// Simple endpoint para realizar peticiones POST y GET
 	mux.Handle("/api", middleware.Logger(http.HandlerFunc(handlers.HolaMundo)))
@@ -55,7 +28,7 @@ func main() {
 
 	//Personalizo el servidor
 	s := &http.Server{
-		Addr:           ":" + portSelected,
+		Addr:           ":" + env.PortSelected,
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -93,10 +66,11 @@ func main() {
 	| |  | | |_| |/ ___ \|  __/| |  |  _ <  __/\__ \ |_ 
 	|_|  |_|\__, /_/   \_\_|  |___| |_| \_\___||___/\__|
 			|___/ `)
-	fmt.Println("Version:", version)
+	fmt.Println("Version:", env.Version)
 
-	fmt.Println("- Puerto:", portSelected)
-	fmt.Println("- Frontend:", frontEndDir)
+	fmt.Println("- Puerto:", env.PortSelected)
+	fmt.Println("- Frontend:", env.FrontEndDir)
+	fmt.Println("- Generar archivos de log:", env.GeneraLogFile)
 	fmt.Println("- Incio:", time.Now().Format("01/02/2006 15:04:05"))
 
 	fmt.Println("\nServidor escuchando...")

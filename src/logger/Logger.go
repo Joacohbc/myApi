@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"myAPI/src/env"
 	"os"
 	"path/filepath"
 	"time"
@@ -15,7 +16,11 @@ var (
 )
 
 func init() {
-	// fmt.Println("Creado archivo de logs...")
+
+	if !env.GeneraLogFile {
+		Logger = log.New(os.Stdout, "INFO: ", log.Lshortfile|log.Ldate|log.Ltime|log.Lmicroseconds)
+		return
+	}
 
 	// Creo el directorio de logs
 	if err := os.MkdirAll("./logs", 0644); err != nil {
@@ -33,12 +38,6 @@ func init() {
 		os.Exit(1)
 	}
 
-	// Creo un multiwriter con al salida consola (os.Stdout) y al archivo de logs
-	mw := io.MultiWriter(os.Stdout, file)
-
-	// Y le asigno el Writter al logger
-	Logger = log.New(mw, "INFO: ", log.Lshortfile|log.Ldate|log.Ltime|log.Lmicroseconds)
-
 	// Busco la ruta absoluta del archivo logs
 	abs, err := filepath.Abs(filename)
 	if err != nil {
@@ -47,5 +46,10 @@ func init() {
 	}
 
 	AbsPath = abs
-	// fmt.Println("Archivo de logs creado en: " + abs)
+
+	// Creo un multiwriter con al salida consola (os.Stdout) y al archivo de logs
+	mw := io.MultiWriter(os.Stdout, file)
+
+	// Y le asigno el Writter al logger
+	Logger = log.New(mw, "INFO: ", log.Lshortfile|log.Ldate|log.Ltime|log.Lmicroseconds)
 }

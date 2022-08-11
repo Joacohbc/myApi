@@ -6,6 +6,8 @@ Una API REST desarrollada en Go 100% Vanilla de un 3 simples endpoints los cuale
 2. Para realizar altas, bajas, modificación y consulta de personas. Endpoint: /users/ que acepta peticiones GET/HEAD, POST, PUT/PATH y DELETE
 3. La API sirve un Front-End muy simple desarrollado con HTML/CSS y Javascript 100% Vanilla para comprobar el funcionamiento del API mediante peticiones realizar con FETCH.
 
+Adicionalmente la API guarda los LOGs en en la carpeta logs/ del directorio actual(usar -log=false) para desactivar la opcion.
+
 ## Abrir servidor
 
 Simplemente hay que ejecutar el archivo binario correspondiente (en este caso, myapi64.bin porque es un Linux x64) para poder iniciar el servidor, si se quiere detener basta con hacer Ctrl+C (^C).
