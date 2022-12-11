@@ -1,5 +1,5 @@
 import { jsonGet, jsonPut } from "../peticiones.js";
-import { errorMensaje, exitoMensaje } from "./mensajes.js";
+import { errorMensaje, exitoMensaje as éxitoMensaje } from "./mensajes.js";
 
 // Determina la visibilidad del Form.
 /*
@@ -42,7 +42,7 @@ function visibilidadForm(idForm, mostrar, json = {}) {
 
         document
             .querySelector("#btnCancelarModif")
-            .addEventListener("click", cancelarModifiacion);
+            .addEventListener("click", cancelarModificacion);
     } else {
         // Sobrescribo el contenido HTML solo dejando los datos para cargar a la persona
         form.innerHTML = `
@@ -74,17 +74,17 @@ function modificarPersona(e) {
     // Paso la cédula a Int
     persona.ci = parseInt(persona.ci);
     if (isNaN(persona.ci)) {
-        errorMensaje(idMensaje, "La cedula debe estar vacia");
+        errorMensaje(idMensaje, "La cédula debe estar vacía");
     }
 
     // Realizo la petición PUT y le paso los datos de la nueva persona
-    jsonPut("/users", persona)
+    jsonPut(`/users/${persona.ci}`, persona)
         .then((json) => {
             // Vació y oculto el formulario
             visibilidadForm(idForm, false);
 
             // Muestro un mensaje de éxito
-            exitoMensaje(idMensaje, json.message);
+            éxitoMensaje(idMensaje, json.message);
         })
         .catch((err) => {
             // Si ocurrió un error lo muestro
@@ -93,7 +93,7 @@ function modificarPersona(e) {
 }
 
 // Oculta el formulario de modificación
-function cancelarModifiacion(e) {
+function cancelarModificacion(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -105,7 +105,7 @@ function cancelarModifiacion(e) {
     visibilidadForm(idForm, false);
 
     // Muestro un mensaje de que se cancelo la modificación
-    exitoMensaje(idMensaje, "Modificacion cancelada con exito");
+    éxitoMensaje(idMensaje, "Modificación cancelada con éxito");
 }
 
 // Envía una petición GET al servidor pidiendo los datos y los carga en el formulario de modificación
@@ -123,7 +123,7 @@ export function cargarPersona(e) {
     // Paso la cédula a Int
     data.set('ci', parseInt(data.get('ci')));
     if (isNaN(data.get('ci'))) {
-        errorMensaje(idMensaje, "La cedula debe estar vacia");
+        errorMensaje(idMensaje, "La cédula debe estar vacía");
     }
 
     // Envió la petición a /users/{ci} y obtengo los datos
@@ -133,7 +133,7 @@ export function cargarPersona(e) {
             visibilidadForm(idForm, true, json);
 
             // Muestro un mensaje de éxito
-            exitoMensaje(idMensaje, "Persona cargada con exito");
+            éxitoMensaje(idMensaje, "Persona cargada con éxito");
         })
         .catch((err) => {
             // Si ocurrió un error lo muestro

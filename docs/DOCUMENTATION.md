@@ -155,7 +155,7 @@ Ejemplo de respuesta del servidor:
 
 ### DELETE - /users/
 
-Las peticiones DELETE dirigidas a este endpoint deben contener una CI de la persona que se quiere eliminar en la URL de la peticion.
+Las peticiones DELETE dirigidas a este endpoint deben contener una CI de la persona que se quiere eliminar en la URL de la petición.
 
 Ejemplo de petición DELETE a /users/12345678
 

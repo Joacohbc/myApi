@@ -8,7 +8,7 @@ import (
 )
 
 // Indica la version de myApi
-const Version string = "v1.0"
+const Version string = "v1.1"
 
 var (
 	PortSelected  string
@@ -19,7 +19,7 @@ var (
 const (
 	// Puerto predeterminado si no se selecciona uno
 	defaultPort          string = "8080"
-	defaultFrontEnd      string = "../static"
+	defaultFrontEnd      string = "./static"
 	defaultGenereLogFile bool   = true
 )
 

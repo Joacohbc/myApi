@@ -23,7 +23,7 @@ func init() {
 	}
 
 	// Creo el directorio de logs
-	if err := os.MkdirAll("./logs", 0644); err != nil {
+	if err := os.MkdirAll("./logs", 0744); err != nil {
 		fmt.Println("Error al crear el directorio de logs: " + err.Error())
 		os.Exit(1)
 	}
@@ -32,7 +32,7 @@ func init() {
 	filename := "./logs/log_" + time.Now().Format("01-02-2006_15-04-05") + ".txt"
 
 	// Creo el archivo de guardado
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0744)
 	if err != nil {
 		fmt.Println("Error al crear el archivo de logs: " + err.Error())
 		os.Exit(1)
@@ -41,7 +41,7 @@ func init() {
 	// Busco la ruta absoluta del archivo logs
 	abs, err := filepath.Abs(filename)
 	if err != nil {
-		fmt.Println("Error al hayar la ruta absoluta del archivo de logs: " + err.Error())
+		fmt.Println("Error al hallar la ruta absoluta del archivo de logs: " + err.Error())
 		os.Exit(1)
 	}
 

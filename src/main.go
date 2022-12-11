@@ -54,7 +54,7 @@ func main() {
 			fmt.Println("Error al cerrar el servidor: " + err.Error())
 			os.Exit(1)
 		}
-		fmt.Println("Servidor cerrado con exito <3")
+		fmt.Println("Servidor cerrado con éxito")
 
 		close(wait)
 	}()
@@ -71,7 +71,7 @@ func main() {
 	fmt.Println("- Puerto:", env.PortSelected)
 	fmt.Println("- Frontend:", env.FrontEndDir)
 	fmt.Println("- Generar archivos de log:", env.GeneraLogFile)
-	fmt.Println("- Incio:", time.Now().Format("01/02/2006 15:04:05"))
+	fmt.Println("- Inicio:", time.Now().Format("01/02/2006 15:04:05"))
 
 	fmt.Println("\nServidor escuchando...")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {

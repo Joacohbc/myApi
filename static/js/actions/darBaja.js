@@ -18,7 +18,7 @@ export function darBajaPersona(e) {
     persona.ci = parseInt(persona.ci);
 
     // Realizo la petición
-    jsonDelete("/users/", persona)
+    jsonDelete(`/users/${persona.ci}`, persona)
         .then((json) => {
             exitoMensaje(idMensaje, json.message);
         })
